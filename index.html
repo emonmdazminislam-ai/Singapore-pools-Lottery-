@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singapore Pools - Official 4D & TOTO Portal</title>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Custom CSS Link -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Helpline Banner -->
+    <div class="top-helpline" data-en="If you notice that you or somebody you know may be gambling excessively, call the National Problem Gambling Helpline today at 1800-6-668-668." data-bn="আপনি বা আপনার পরিচিত কেউ অতিরিক্ত জুয়া খেলায় আসক্ত হয়ে পড়লে, আজই ন্যাশনাল প্রবলেম জুয়া হেল্পলাইনে কল করুন: 1800-6-668-668।">
+        আপনি বা আপনার পরিচিত কেউ অতিরিক্ত জুয়া খেলায় আসক্ত হয়ে পড়লে, আজই ন্যাশনাল প্রবলেম জুয়া হেল্পলাইনে কল করুন: 1800-6-668-668।
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo-container">
+            <!-- Dynamic Logo Container (Supports Uploaded PNG from Admin or Default SVG) -->
+            <div class="official-logo-box" id="headerLogoWrapper">
+                <img id="dynamicHeaderLogo" src="" alt="Singapore Pools Logo" class="custom-logo-img hidden">
+                <div id="defaultLogoFallback" class="default-logo-inner">
+                    <svg viewBox="0 0 100 100" class="sg-logo-svg">
+                        <rect width="100" height="100" rx="15" fill="#005bac"/>
+                        <path d="M20 25 H80 V42 H42 V58 H75 V75 H20 Z" fill="#ffffff"/>
+                    </svg>
+                    <div class="logo-text-group">
+                        <span class="sp-top-text">SINGAPORE</span>
+                        <span class="sp-bottom-text">POOLS</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h1 data-en="Singapore Pools" data-bn="সিঙ্গাপুর পুলস">সিঙ্গাপুর পুলস</h1>
+                <span class="header-sub" data-en="Official Authorized Portal" data-bn="অফিশিয়াল অনুমোদিত পোর্টাল">অফিশিয়াল অনুমোদিত পোর্টাল</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <select class="lang-select" id="langSelector" onchange="changeLanguage(this.value)">
+                <option value="bn" selected>বাংলা</option>
+                <option value="en">English</option>
+            </select>
+
+            <!-- Three-Line Menu Button -->
+            <button type="button" onclick="toggleThreeLineMenu()" class="three-line-btn" aria-label="Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Three-Line Drawer / Dropdown Menu (4 Core Sections) -->
+    <div id="threeLineMenu" class="drawer-menu hidden">
+        <button type="button" onclick="selectDrawerSection('home')"><i class="fas fa-home"></i> <span data-en="Home" data-bn="হোম">হোম</span></button>
+        <button type="button" onclick="selectDrawerSection('guide')"><i class="fas fa-book"></i> <span data-en="Guide" data-bn="নির্দেশিকা">নির্দেশিকা</span></button>
+        <button type="button" onclick="selectDrawerSection('apply')"><i class="fas fa-file-alt"></i> <span data-en="Apply Now" data-bn="আবেদন করুন">আবেদন করুন</span></button>
+        <button type="button" onclick="selectDrawerSection('status')"><i class="fas fa-search"></i> <span data-en="Check Status" data-bn="স্ট্যাটাস চেক">স্ট্যাটাস চেক</span></button>
+    </div>
+
+    <!-- Compact Search Logo Bar Above Navigation Bar -->
+    <div class="above-nav-search-bar">
+        <div class="search-trigger-row">
+            <button type="button" onclick="toggleSearchBox()" class="search-logo-btn" title="Search Options">
+                <i class="fas fa-search"></i>
+                <span class="search-logo-label" data-en="Search" data-bn="সার্চ">সার্চ</span>
+            </button>
+            <div id="searchInputWrapper" class="search-input-wrap hidden">
+                <input type="text" id="siteSearchInput" onkeyup="filterSiteOptions()" placeholder="অপশন খুঁজুন..." data-en="Search options..." data-bn="অপশন খুঁজুন...">
+                <button type="button" onclick="closeSearchBox()" class="search-clear-btn"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div id="searchResultsBox" class="search-results-box hidden"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="nav-bar">
+        <button type="button" id="nav-home" onclick="showSection('home')" class="active"><i class="fas fa-home"></i> <span data-en="Home" data-bn="হোম">হোম</span></button>
+        <button type="button" id="nav-guide" onclick="showSection('guide')"><i class="fas fa-book"></i> <span data-en="Guide" data-bn="নির্দেশিকা">নির্দেশিকা</span></button>
+        <button type="button" id="nav-apply" onclick="showSection('apply')"><i class="fas fa-file-alt"></i> <span data-en="Apply Now" data-bn="আবেদন করুন">আবেদন করুন</span></button>
+        <button type="button" id="nav-status" onclick="showSection('status')"><i class="fas fa-search"></i> <span data-en="Check Status" data-bn="স্ট্যাটাস চেক">স্ট্যাটাস চেক</span></button>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- HOME SECTION -->
+        <section id="section-home" class="page-section">
+            <!-- Hero Slider / Banner (Supports 4-5 Uploaded Images from Admin with Auto-Slide) -->
+            <div class="hero-slider-wrapper">
+                <div id="heroSlidesTrack" class="hero-slides-track">
+                    <div class="hero-slide">
+                        <div class="banner-overlay">
+                            <h2 data-en="Official 4D & TOTO Number Portal" data-bn="অফিশিয়াল ৪ডি ও টোটো নম্বর পোর্টাল">অফিশিয়াল ৪ডি ও টোটো নম্বর পোর্টাল</h2>
+                            <p data-en="Apply securely for your official Singapore Pools number and check results instantly." data-bn="নিরাপদে আপনার অফিশিয়াল সিঙ্গাপুর পুলস নম্বরের জন্য আবেদন করুন এবং ফলাফল যাচাই করুন।">নিরাপদে আপনার অফিশিয়াল সিঙ্গাপুর পুলস নম্বরের জন্য আবেদন করুন এবং ফলাফল যাচাই করুন।</p>
+                            <button type="button" onclick="showSection('apply')" class="cta-btn" data-en="Apply For Number Now" data-bn="এখনই নম্বরের জন্য আবেদন করুন">এখনই নম্বরের জন্য আবেদন করুন</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="sliderDotsContainer" class="slider-dots"></div>
+            </div>
+
+            <!-- Live Stats & Review Counter -->
+            <div class="card stats-card">
+                <h3 data-en="Live Portal Statistics & Reviews" data-bn="লাইভ পোর্টাল স্ট্যাটিস্টিক্স ও রিভিউ"><i class="fas fa-chart-line"></i> লাইভ পোর্টাল স্ট্যাটিস্টিক্স ও রিভিউ</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <i class="fas fa-users" style="color: #0284c7;"></i>
+                        <h4 id="totalAppStat">1,420+</h4>
+                        <p data-en="Total Applicants" data-bn="মোট আবেদনকারী">মোট আবেদনকারী</p>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-smile-beam" style="color: #16a34a;"></i>
+                        <h4 id="satisfiedStat">99.4%</h4>
+                        <p data-en="Satisfied Clients" data-bn="সন্তুষ্ট ক্লায়েন্ট">সন্তুষ্ট ক্লায়েন্ট</p>
+                    </div>
+                    <div class="stat-box">
+                        <i class="fas fa-trophy" style="color: #ca8a04;"></i>
+                        <h4 id="winnersStat">850+</h4>
+                        <p data-en="Winners Funded" data-bn="বিজয়ী লটারি প্রদান">বিজয়ী লটারি প্রদান</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Singapore Pools Official Statistics Cards -->
+            <div class="card">
+                <h3 style="margin-bottom: 15px; font-size: 16px; color: #073763;" data-en="Singapore Pools Key Statistics" data-bn="সিঙ্গাপুর পুলসের মূল পরিসংখ্যান"><i class="fas fa-chart-bar"></i> সিঙ্গাপুর পুলসের মূল পরিসংখ্যান</h3>
+                
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-chart-line"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Turnover" data-bn="টার্নওভার">টার্নওভার</span>
+                        <h4 class="info-value">$13.5 Billion</h4>
+                    </div>
+                </div>
+
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-users"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Staff Strength" data-bn="কর্মী সংখ্যা">কর্মী সংখ্যা</span>
+                        <h4 class="info-value" data-en="Close to 1,000" data-bn="প্রায় ১,০০০">প্রায় ১,০০০</h4>
+                    </div>
+                </div>
+
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-hand-holding-usd"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Contributions to Tote Board" data-bn="টোট বোর্ডে অবদান">টোট বোর্ডে অবদান</span>
+                        <h4 class="info-value">$583 Million</h4>
+                    </div>
+                </div>
+
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-clock"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Staff Volunteered Hours" data-bn="কর্মীদের স্বেচ্ছাসেবী ঘণ্টা">কর্মীদের স্বেচ্ছাসেবী ঘণ্টা</span>
+                        <h4 class="info-value">> 8,433</h4>
+                    </div>
+                </div>
+
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Betting Duties & Taxes" data-bn="বেটিং ডিউটি ও ট্যাক্স">বেটিং ডিউটি ও ট্যাক্স</span>
+                        <h4 class="info-value">$2.49 Billion</h4>
+                    </div>
+                </div>
+
+                <div class="info-card-box">
+                    <div class="info-icon"><i class="fas fa-hands-helping"></i></div>
+                    <div class="info-content">
+                        <span class="info-title" data-en="Staff Volunteerism Rate" data-bn="কর্মী স্বেচ্ছাসেবী হার">কর্মী স্বেচ্ছাসেবী হার</span>
+                        <h4 class="info-value">60%</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Singapore Office Team / Management Section -->
+            <div class="card">
+                <h3 style="margin-bottom: 15px; font-size: 16px; color: #073763;" data-en="Singapore Head Office Management Team" data-bn="সিঙ্গাপুর হেড অফিস ম্যানেজমেন্ট টিম"><i class="fas fa-user-tie"></i> সিঙ্গাপুর হেড অফিস ম্যানেজমেন্ট টিম</h3>
+                <div class="team-grid">
+                    <div class="team-member">
+                        <div class="member-avatar"><i class="fas fa-user-shield"></i></div>
+                        <h4>David Tan</h4>
+                        <p class="role" data-en="Chief Operations Officer" data-bn="চিফ অপারেশনস অফিসার">চিফ অপারেশনস অফিসার</p>
+                        <p class="desc" data-en="Managing authorized 4D & TOTO numbers and security verification." data-bn="অনুমোদিত ৪ডি ও টোটো নম্বর এবং নিরাপত্তা যাচাইকরণ পরিচালনা করছেন।">অনুমোদিত ৪ডি ও টোটো নম্বর এবং নিরাপত্তা যাচাইকরণ পরিচালনা করছেন।</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-avatar"><i class="fas fa-user-tie"></i></div>
+                        <h4>Lim Wei Ling</h4>
+                        <p class="role" data-en="Head of Client Relations" data-bn="হেড অফ ক্লায়েন্ট রিলেশন্স">হেড অফ ক্লায়েন্ট রিলেশন্স</p>
+                        <p class="desc" data-en="Overseeing international client applications and payout verification." data-bn="আন্তর্জাতিক ক্লায়েন্ট আবেদন এবং পেমেন্ট যাচাইকরণ তত্ত্বাবধান করছেন।">আন্তর্জাতিক ক্লায়েন্ট আবেদন এবং পেমেন্ট যাচাইকরণ তত্ত্বাবধান করছেন।</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GUIDE SECTION -->
+        <section id="section-guide" class="page-section hidden">
+            <div class="card">
+                <h2 data-en="Application Instructions" data-bn="আবেদনের নির্দেশিকা"><i class="fas fa-info-circle"></i> আবেদনের নির্দেশিকা</h2>
+                <p style="font-size: 13px; line-height: 1.6;" data-en="1. Go to 'Apply Now' and fill out all mandatory information.<br>2. Send the official fee ($50) to our official bKash or PSB account.<br>3. Submit the form to get your Application ID and check your status once approved for your number." data-bn="১. 'আবেদন করুন' এ গিয়ে সমস্ত বাধ্যতামূলক তথ্য পূরণ করুন。<br>২. অফিশিয়াল ফি ($50) আমাদের বিকাশ বা PSB অ্যাকাউন্টে প্রদান করুন。<br>৩. সাবমিট করে অ্যাপ্লিকেশন আইডি সংগ্রহ করুন যা দিয়ে স্ট্যাটাস চেক ও অনুমোদন সাপেক্ষে লটারি নম্বর পাবেন।">
+                    ১. 'আবেদন করুন' এ গিয়ে সমস্ত বাধ্যতামূলক তথ্য পূরণ করুন。<br>
+                    ২. অফিশিয়াল ফি ($50) আমাদের বিকাশ বা PSB অ্যাকাউন্টে প্রদান করুন。<br>
+                    ৩. সাবমিট করে অ্যাপ্লিকেশন আইডি সংগ্রহ করুন যা দিয়ে স্ট্যাটাস চেক ও অনুমোদন সাপেক্ষে লটারি নম্বর পাবেন।
+                </p>
+            </div>
+        </section>
+
+        <!-- APPLY SECTION -->
+        <section id="section-apply" class="page-section hidden">
+            <div class="card">
+                <h2 data-en="Number Application Form" data-bn="নম্বর আবেদন ফরম"><i class="fas fa-file-signature"></i> নম্বর আবেদন ফরম</h2>
+                <div class="fee-badge" data-en="Official Application Fee: $50" data-bn="অফিশিয়াল আবেদন ফি: $50">অফিশিয়াল আবেদন ফি: $50</div>
+                
+                <form id="applicationForm" onsubmit="handleFormSubmit(event)">
+                    <div class="form-group">
+                        <label data-en="First Name *" data-bn="প্রথম নাম *">প্রথম নাম *</label>
+                        <input type="text" id="firstName" required placeholder="Enter first name" data-en="Enter first name" data-bn="প্রথম নাম লিখুন">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Last Name *" data-bn="শেষ নাম *">শেষ নাম *</label>
+                        <input type="text" id="lastName" required placeholder="Enter last name" data-en="Enter last name" data-bn="শেষ নাম লিখুন">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Contact Number (WhatsApp/Phone) *" data-bn="যোগাযোগের নম্বর (হোয়াটসঅ্যাপ/ফোন) *">যোগাযোগের নম্বর (হোয়াটসঅ্যাপ/ফোন) *</label>
+                        <input type="text" id="contactNumber" required placeholder="017XXXXXXXX" data-en="017XXXXXXXX" data-bn="017XXXXXXXX">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Gmail Address *" data-bn="জিমেইল ঠিকানা *">জিমেইল ঠিকানা *</label>
+                        <input type="email" id="gmail" required placeholder="example@gmail.com" data-en="example@gmail.com" data-bn="example@gmail.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Select Number Type *" data-bn="নম্বর টাইপ নির্বাচন করুন *">নম্বর টাইপ নির্বাচন করুন *</label>
+                        <select id="permitType" required>
+                            <option value="4D" data-en="4D Number" data-bn="৪ডি নম্বর (4D)">৪ডি নম্বর (4D)</option>
+                            <option value="TOTO" data-en="TOTO Number" data-bn="টোটো নম্বর (TOTO)">টোটো নম্বর (TOTO)</option>
+                        </select>
+                    </div>
+
+                    <div class="payment-box">
+                        <label style="font-weight: bold; margin-bottom: 5px; display: block;" data-en="Payment Details & Copy Numbers ($50 Fee):" data-bn="পেমেন্ট ডিটেইলস ও নম্বর কপি করুন ($50 ফি):">পেমেন্ট ডিটেইলস ও নম্বর কপি করুন ($50 ফি):</label>
+                        <div class="account-cards">
+                            <div class="acc-card">
+                                <span><span data-en="bKash:" data-bn="বিকাশ:">বিকাশ:</span> <strong id="displayBikash">01879774023</strong></span>
+                                <button type="button" class="copy-btn" onclick="copyToClipboard('displayBikash', this)" data-en="Copy" data-bn="কপি">কপি</button>
+                            </div>
+                            <div class="acc-card">
+                                <span><span data-en="PSB:" data-bn="পিএসবি:">পিএসবি:</span> <strong id="displayPsb">8461912</strong></span>
+                                <button type="button" class="copy-btn" onclick="copyToClipboard('displayPsb', this)" data-en="Copy" data-bn="কপি">কপি</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Sender Account Number (bKash/Bank) *" data-bn="প্রেরক অ্যাকাউন্ট নম্বর (বিকাশ/ব্যাংক) *">প্রেরক অ্যাকাউন্ট নম্বর (বিকাশ/ব্যাংক) *</label>
+                        <input type="text" id="senderAccount" required placeholder="Account number you sent money from" data-en="Account number you sent money from" data-bn="যে নম্বর থেকে টাকা পাঠিয়েছেন">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Last 4 Digits of Transaction ID *" data-bn="ট্রানজেকশন আইডির শেষ ৪ ডিজিট *">ট্রানজেকশন আইডির শেষ ৪ ডিজিট *</label>
+                        <input type="text" id="lastDigits" required maxlength="4" placeholder="e.g. 4892" data-en="e.g. 4892" data-bn="যেমন: 4892">
+                    </div>
+
+                    <div class="form-group">
+                        <label data-en="Other Notes (Optional)" data-bn="অন্যান্য নোট (ঐচ্ছিক)">অন্যান্য নোট (ঐচ্ছিক)</label>
+                        <textarea id="receiveMoneyInfo" placeholder="Any extra information" data-en="Any extra information" data-bn="অতিরিক্ত কোনো তথ্য থাকলে লিখুন"></textarea>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn-submit" data-en="Submit Application" data-bn="আবেদন জমা দিন">আবেদন জমা দিন</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- STATUS SECTION -->
+        <section id="section-status" class="page-section hidden">
+            <div class="card">
+                <h2><i class="fas fa-search-dollar"></i> <span data-en="Check Application Status" data-bn="আবেদনের স্ট্যাটাস চেক করুন">আবেদনের স্ট্যাটাস চেক করুন</span></h2>
+                <div class="form-group">
+                    <label data-en="Application ID *" data-bn="অ্যাপ্লিকেশন আইডি *">অ্যাপ্লিকেশন আইডি *</label>
+                    <input type="text" id="checkAppNo" placeholder="e.g. APP-4892" data-en="e.g. APP-4892" data-bn="যেমন: APP-4892">
+                </div>
+                <div class="form-group">
+                    <label data-en="Contact Number *" data-bn="যোগাযোগের নম্বর *">যোগাযোগের নম্বর *</label>
+                    <input type="text" id="checkContact" placeholder="Your contact number" data-en="Your contact number" data-bn="আপনার যোগাযোগের নম্বর">
+                </div>
+                <button type="button" onclick="checkStatus()" class="btn-submit" data-en="Check Status" data-bn="স্ট্যাটাস চেক করুন">স্ট্যাটাস চেক করুন</button>
+
+                <div id="statusResult" class="hidden" style="margin-top: 20px;"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal hidden">
+        <div class="modal-content">
+            <i class="fas fa-check-circle" style="font-size: 50px; color: #16a34a; margin-bottom: 10px;"></i>
+            <h3 data-en="Application Submitted Successfully!" data-bn="আবেদন সফলভাবে জমা হয়েছে!">আবেদন সফলভাবে জমা হয়েছে!</h3>
+            <p data-en="Your Application ID is:" data-bn="আপনার অ্যাপ্লিকেশন আইডি হলো:">আপনার অ্যাপ্লিকেশন আইডি হলো:</p>
+            <div id="generatedAppIdBox" class="app-id-box">APP-XXXX</div>
+            <p style="font-size: 13px; color: #64748b; margin-top: 10px;" data-en="Save this ID to check status and win number upon approval." data-bn="অনুমোদন সাপেক্ষে স্ট্যাটাস ও লটারি নম্বর দেখতে এই আইডি সংরক্ষণ করুন।">অনুমোদন সাপেক্ষে স্ট্যাটাস ও লটারি নম্বর দেখতে এই আইডি সংরক্ষণ করুন।</p>
+            <button type="button" onclick="closeSuccessModal()" class="btn-submit" style="margin-top: 15px;" data-en="Check Status Now" data-bn="এখনই স্ট্যাটাস চেক করুন">এখনই স্ট্যাটাস চেক করুন</button>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal hidden">
+        <div class="modal-content admin-modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 data-en="Admin Dashboard & Global Settings" data-bn="অ্যাডমিন ড্যাশবোর্ড ও গ্লোবাল সেটিংস">অ্যাডমিন ড্যাশবোর্ড ও গ্লোবাল সেটিংস</h3>
+                <button type="button" onclick="closeAdminModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;"><i class="fas fa-times"></i></button>
+            </div>
+
+            <!-- Admin Dashboard Summary Counters -->
+            <div class="admin-summary-grid">
+                <div class="admin-sum-card">
+                    <span data-en="Pending" data-bn="পেন্ডিং">পেন্ডিং</span>
+                    <strong id="adminPendingCount">0</strong>
+                </div>
+                <div class="admin-sum-card approved">
+                    <span data-en="Approved" data-bn="অনুমোদিত">অনুমোদিত</span>
+                    <strong id="adminApprovedCount">0</strong>
+                </div>
+                <div class="admin-sum-card rejected">
+                    <span data-en="Rejected" data-bn="বাতিল">বাতিল</span>
+                    <strong id="adminRejectedCount">0</strong>
+                </div>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #cbd5e1;">
+                <h4 style="font-size: 13px; margin-bottom: 10px;" data-en="Global Banner Slides, Logo & Payment (For All Users)" data-bn="গ্লোবাল ব্যানার স্লাইডার, লোগো ও পেমেন্ট (সকলের জন্য)">গ্লোবাল ব্যানার স্লাইডার, লোগো ও পেমেন্ট (সকলের জন্য)</h4>
+                
+                <!-- Multi-Banner Upload (Up to 5 Slides for Hero Section) -->
+                <div class="form-group" style="margin-bottom: 10px; background: #fff; padding: 8px; border-radius: 6px; border: 1px dashed #0284c7;">
+                    <label style="font-size: 11px; color: #073763;" data-en="Upload Banner Slider Images (Up to 5 Photos):" data-bn="ব্যানার স্লাইডার ছবি আপলোড করুন (সর্বোচ্চ ৫টি ছবি):">ব্যানার স্লাইডার ছবি আপলোড করুন (সর্বোচ্চ ৫টি ছবি):</label>
+                    <input type="file" id="adminBannerFilesInput" accept="image/*" multiple onchange="handleAdminBannerFiles(event)" style="padding: 4px; font-size: 11px;">
+                    <div id="adminBannerPreviewList" class="admin-banner-preview-list"></div>
+                    <button type="button" onclick="clearCustomBanners()" style="background: #64748b; color: white; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; margin-top: 6px;" data-en="Reset Banners" data-bn="ডিফল্ট ব্যানার">ডিফল্ট ব্যানার</button>
+                </div>
+
+                <!-- PNG Logo Upload Option in Admin -->
+                <div class="form-group" style="margin-bottom: 10px; background: #fff; padding: 8px; border-radius: 6px; border: 1px dashed #94a3b8;">
+                    <label style="font-size: 11px; color: #073763;" data-en="Upload Header PNG Logo:" data-bn="হেডার PNG লোগো আপলোড করুন:">হেডার PNG লোগো আপলোড করুন:</label>
+                    <input type="file" id="adminLogoFileInput" accept="image/png, image/jpeg, image/webp" onchange="handleAdminLogoFile(event)" style="padding: 4px; font-size: 11px;">
+                    <div id="adminLogoPreviewWrap" style="margin-top: 6px; display: flex; align-items: center; gap: 10px;">
+                        <img id="adminLogoPreviewImg" src="" alt="Preview" style="height: 36px; width: auto; border-radius: 4px; border: 1px solid #cbd5e1; display: none; background: #073763; padding: 2px;">
+                        <button type="button" onclick="clearCustomLogo()" style="background: #64748b; color: white; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; cursor: pointer;" data-en="Reset Logo" data-bn="ডিফল্ট লোগো">ডিফল্ট লোগো</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 6px;">
+                    <label style="font-size: 11px;" data-en="bKash Number:" data-bn="বিকাশ নম্বর:">বিকাশ নম্বর:</label>
+                    <input type="text" id="adminBikashInput" style="padding: 6px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <label style="font-size: 11px;" data-en="PSB Account:" data-bn="পিএসবি অ্যাকাউন্ট:">পিএসবি অ্যাকাউন্ট:</label>
+                    <input type="text" id="adminPsbInput" style="padding: 6px;">
+                </div>
+                <button type="button" onclick="saveAdminSettings()" class="btn-submit" style="padding: 8px; font-size: 12px;" data-en="Save & Update For Everyone" data-bn="সকলের জন্য সেভ ও আপডেট করুন">সকলের জন্য সেভ ও আপডেট করুন</button>
+            </div>
+
+            <div class="admin-top" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px;">
+                <h4 style="font-size: 13px;" data-en="Central Applications List" data-bn="সকল সেন্ট্রাল আবেদনের তালিকা">সকল সেন্ট্রাল আবেদনের তালিকা</h4>
+                <input type="text" id="adminFilterInput" onkeyup="loadAdminData()" placeholder="APP ID / Phone..." data-en="Search APP ID / Phone..." data-bn="APP ID বা নম্বর খুঁজুন..." style="width: 145px; padding: 4px 8px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <button type="button" onclick="loadAdminData()" style="background: #e2e8f0; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;" data-en="Refresh" data-bn="রিফ্রেশ">রিফ্রেশ</button>
+            </div>
+            <div id="adminTableContainer" style="overflow-x: auto; max-height: 280px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 6px; background: #fff;"></div>
+        </div>
+    </div>
+
+    <!-- Live Chat Widget with Language Selector & Message-Based Guidelines -->
+    <div class="chat-widget">
+        <button type="button" onclick="toggleChatBox()" class="chat-toggle-btn"><i class="fas fa-comments"></i></button>
+        <div id="liveChatBox" class="chat-box hidden">
+            <div class="chat-header">
+                <span data-en="Live Support" data-bn="লাইভ সাপোর্ট">লাইভ সাপোর্ট</span>
+                <div class="chat-header-controls">
+                    <select id="chatLangSelector" class="chat-lang-select" onchange="syncChatLanguage(this.value)">
+                        <option value="bn" selected>বাংলা</option>
+                        <option value="en">English</option>
+                    </select>
+                    <button type="button" onclick="toggleChatBox()" style="background:none; border:none; color:white; cursor:pointer; font-size:14px;"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div id="chatBody" class="chat-body">
+                <div id="chatWelcomeMsg" class="chat-msg bot"></div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." data-en="Type a message..." data-bn="মেসেজ লিখুন..." onkeypress="handleChatKey(event)">
+                <button type="button" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (Matched to Reference Image Layout + Telegram + Disguised Admin Control Center Only Here) -->
+    <footer class="footer">
+        <div class="footer-about-row" onclick="toggleFooterAbout()">
+            <span data-en="About Us" data-bn="আমাদের সম্পর্কে">আমাদের সম্পর্কে</span>
+            <i id="footerAboutChevron" class="fas fa-chevron-down"></i>
+        </div>
+        <div id="footerAboutContent" class="footer-about-panel hidden" data-en="Singapore Pools operates 4D and TOTO number services with structured compliance, transparent verification, and dedicated client support." data-bn="সিঙ্গাপুর পুলস স্বচ্ছ যাচাইকরণ, নির্ধারিত নিয়মাবলি এবং নিবেদিত ক্লায়েন্ট সাপোর্টের মাধ্যমে ৪ডি ও টোটো নম্বর সেবা পরিচালনা করে।">
+            সিঙ্গাপুর পুলস স্বচ্ছ যাচাইকরণ, নির্ধারিত নিয়মাবলি এবং নিবেদিত ক্লায়েন্ট সাপোর্টের মাধ্যমে ৪ডি ও টোটো নম্বর সেবা পরিচালনা করে।
+        </div>
+        <div class="footer-divider"></div>
+
+        <div class="footer-follow-block">
+            <p class="footer-follow-title" data-en="Follow Us" data-bn="আমাদের অনুসরণ করুন">আমাদের অনুসরণ করুন</p>
+            <div class="footer-social-row">
+                <a href="https://www.facebook.com/Singaporepoolsinthecommunity" target="_blank" class="f-social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com/sgpools?mdxt=ZjAwcGZ5ejcxYXg%3D" target="_blank" class="f-social-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://youtube.com/@singaporepools4915?si=x3ty7KAEHaNtoMaJ" target="_blank" class="f-social-btn" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://wa.me/66840502810" target="_blank" class="f-social-btn" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                <a href="https://t.me" target="_blank" class="f-social-btn f-tg-btn" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                <!-- Disguised Admin Control Center Logo Only (No "Admin" label) -->
+                <button type="button" onclick="promptAdminPassword()" class="f-social-btn f-disguised-admin-btn" aria-label="Control">
+                    <i class="fas fa-shield-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="footer-divider"></div>
+
+        <p class="footer-disclaimer" data-en="Singapore Pools takes a strong Play Responsibly stand. Customers should play our games just for a little flutter and it must not adversely affect their finances or lifestyle. Our game rules do not allow any person under the age of 18 to place a bet or claim a winning ticket prize. Account betting is only available to those above 21 years old. Please exit if you are under 18." data-bn="সিঙ্গাপুর পুলস দায়িত্বশীল খেলার অবস্থানে দৃঢ়ভাবে অঙ্গীকারবদ্ধ। ব্যবহারকারীদের আর্থিক বা জীবনযাত্রার ওপর বিরূপ প্রভাব না ফেলে সীমিত পরিসরে অংশগ্রহণ করা উচিত। ১৮ বছরের কম বয়সীদের অংশগ্রহণ বা পুরস্কার দাবি অনুমোদিত নয় এবং অ্যাকাউন্ট সেবা কেবল ২১ বছরের ঊর্ধ্বের ব্যক্তিদের জন্য প্রযোজ্য। আপনার বয়স ১৮ বছরের কম হলে অনুগ্রহ করে প্রস্থান করুন।">
+            সিঙ্গাপুর পুলস দায়িত্বশীল খেলার অবস্থানে দৃঢ়ভাবে অঙ্গীকারবদ্ধ। ব্যবহারকারীদের আর্থিক বা জীবনযাত্রার ওপর বিরূপ প্রভাব না ফেলে সীমিত পরিসরে অংশগ্রহণ করা উচিত। ১৮ বছরের কম বয়সীদের অংশগ্রহণ বা পুরস্কার দাবি অনুমোদিত নয় এবং অ্যাকাউন্ট সেবা কেবল ২১ বছরের ঊর্ধ্বের ব্যক্তিদের জন্য প্রযোজ্য। আপনার বয়স ১৮ বছরের কম হলে অনুগ্রহ করে প্রস্থান করুন।
+        </p>
+
+        <p class="footer-copyright">&copy; <span data-en="Copyright Singapore Pools. All rights reserved." data-bn="কপিরাইট সিঙ্গাপুর পুলস। সর্বস্বত্ব সংরক্ষিত।">কপিরাইট সিঙ্গাপুর পুলস। সর্বস্বত্ব সংরক্ষিত।</span></p>
+
+        <div class="footer-badges-row">
+            <div class="play-resp-box">
+                <div class="play-resp-title">PLAY RESPONSIBLY</div>
+                <div class="play-resp-sub" data-en="Stay Legal. Bet With Care. Helpline: 1800-6-668-668" data-bn="আইন মেনে চলুন। সতর্ক থাকুন। হেল্পলাইন: 1800-6-668-668">আইন মেনে চলুন। সতর্ক থাকুন। হেল্পলাইন: 1800-6-668-668</div>
+            </div>
+            <div class="wla-badge-box">
+                <span class="wla-mark">WLA</span>
+                <span class="wla-sub" data-en="CERTIFIED RESPONSIBLE FRAMEWORK" data-bn="সার্টিফাইড সিকিউরিটি ফ্রেমওয়ার্ক">সার্টিফাইড সিকিউরিটি ফ্রেমওয়ার্ক</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS Link -->
+    <script src="script.js"></script>
+</body>
+</html>
